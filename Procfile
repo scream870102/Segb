@@ -1,0 +1,1 @@
+web: bin/Sakamichi-Emoji-Go-Bot
