@@ -1,5 +1,6 @@
 module github.com/scream870102/Sakamichi-Emoji-Go-Bot
 
+// +heroku goVersion go1.17
 go 1.17
 
 require github.com/bwmarrin/discordgo v0.23.2
