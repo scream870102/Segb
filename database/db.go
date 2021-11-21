@@ -123,6 +123,7 @@ func intersection(a map[uuid.UUID]struct{}, b map[uuid.UUID]struct{}) map[uuid.U
 }
 
 func (d *Database) initDic() {
+	d.dic = make(map[string]map[string]map[uuid.UUID]struct{})
 	for k, v := range d.raw {
 		for _, raw := range v {
 			d.AddValue(&raw, k)

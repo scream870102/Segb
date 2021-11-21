@@ -21,6 +21,8 @@ func (c *CmdUpdate) AdminRequired() bool {
 func (c *CmdUpdate) Exec(ctx *Context) (err error) {
 	ss := database.SpreadSheetInstance()
 	ss.UpdateAllValueFromRemote()
+	db := database.DatabaseInstance()
+	db.Init()
 	_, err = ctx.Session.ChannelMessageSend(ctx.Message.ChannelID, "Update local cache from db successful")
 	return err
 }
