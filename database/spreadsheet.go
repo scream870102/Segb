@@ -96,16 +96,16 @@ func (s *SpreadSheet) TryAdd(value RawValue, guild string) bool {
 
 func (s *SpreadSheet) Init() {
 	var token Token
-	if tokenString := os.Getenv("TOKEN"); tokenString != "" {
+	if jsonFile, err := os.Open(s.tokenFileName); err == nil {
+		tokenString, _ := ioutil.ReadAll(jsonFile)
+		json.Unmarshal(tokenString, &token)
+		fmt.Println("Init spreadsheet token from json file")
+	} else if tokenString := os.Getenv("TOKEN"); tokenString != "" {
 		err := json.Unmarshal([]byte(tokenString), &token)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 		fmt.Println("Init spreadsheet token from env")
-	} else if jsonFile, err := os.Open(s.tokenFileName); err == nil {
-		tokenString, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(tokenString, &token)
-		fmt.Println("Init spreadsheet token from json file")
 	}
 
 	// Create a JWT configurations object for the Google service account

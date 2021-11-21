@@ -23,6 +23,7 @@ func main() {
 	var cfg *misc.Config
 	if configText != "" {
 		json.Unmarshal([]byte(configText), &cfg)
+		fmt.Println("Get config from env")
 	} else {
 		const fileName string = "./config.json"
 		tmpCfg, err := misc.ParseConfigFromJSONFile(fileName)
@@ -30,10 +31,11 @@ func main() {
 			panic(err)
 		}
 		cfg = tmpCfg
+		fmt.Println("Get config from json")
 	}
 
-	database.DatabaseInstance().Init()
 	database.SpreadSheetInstance().Init()
+	database.DatabaseInstance().Init()
 
 	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + cfg.Token)
