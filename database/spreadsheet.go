@@ -97,12 +97,11 @@ func (s *SpreadSheet) TryAdd(value RawValue, guild string) bool {
 func (s *SpreadSheet) Init() {
 	var token Token
 	if tokenString := os.Getenv("TOKEN"); tokenString != "" {
-		fmt.Println("Init spreadsheet token from env")
 		err := json.Unmarshal([]byte(tokenString), &token)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		fmt.Println(token.Email)
+		fmt.Println("Init spreadsheet token from env")
 	} else if jsonFile, err := os.Open(s.tokenFileName); err == nil {
 		tokenString, _ := ioutil.ReadAll(jsonFile)
 		json.Unmarshal(tokenString, &token)
@@ -163,7 +162,7 @@ func newSpreadSheet() *SpreadSheet {
 func (s *SpreadSheet) updateLocalCache() {
 	for _, sheet := range s.spreadSheet.Sheets {
 		title := sheet.Properties.Title
-
+		fmt.Printf("Try to get value from remote for guild %s\n", title)
 		if _, isSheetExist := s.RawValues[title]; !isSheetExist {
 			s.RawValues[title] = make([]RawValue, 0)
 		}
