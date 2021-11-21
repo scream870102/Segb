@@ -1,1 +1,1 @@
-web: bin/segb
+worker: bin/segb

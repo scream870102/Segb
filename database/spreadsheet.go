@@ -162,7 +162,6 @@ func newSpreadSheet() *SpreadSheet {
 func (s *SpreadSheet) updateLocalCache() {
 	for _, sheet := range s.spreadSheet.Sheets {
 		title := sheet.Properties.Title
-		fmt.Printf("Try to get value from remote for guild %s\n", title)
 		if _, isSheetExist := s.RawValues[title]; !isSheetExist {
 			s.RawValues[title] = make([]RawValue, 0)
 		}
