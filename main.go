@@ -1,34 +1,51 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/scream870102/segb/commands"
+	"github.com/scream870102/segb/database"
+	"github.com/scream870102/segb/events"
+	"github.com/scream870102/segb/misc"
 )
-
 
 // Variables used for command line parameters
-var (
-	Token string
-)
+var Token string
 
 func main() {
-	discordToken:= os.Getenv("DISCORD_TOKEN")
+	configText := os.Getenv("CONFIG")
+	var cfg *misc.Config
+	if configText != "" {
+		json.Unmarshal([]byte(configText), &cfg)
+	} else {
+		const fileName string = "./config.json"
+		tmpCfg, err := misc.ParseConfigFromJSONFile(fileName)
+		if err != nil {
+			panic(err)
+		}
+		cfg = tmpCfg
+	}
+
+	database.DatabaseInstance().Init()
+	database.SpreadSheetInstance().Init()
+
 	// Create a new Discord session using the provided bot token.
-	dg, err := discordgo.New("Bot " + discordToken)
+	dg, err := discordgo.New("Bot " + cfg.Token)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return
 	}
 
-	// Register the messageCreate func as a callback for MessageCreate events.
-	dg.AddHandler(messageCreate)
+	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
 
-	// In this example, we only care about receiving message events.
-	dg.Identify.Intents = discordgo.IntentsGuildMessages
+	registerEvents(dg)
+	registerCommands(dg, cfg)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
@@ -36,6 +53,17 @@ func main() {
 		fmt.Println("error opening connection,", err)
 		return
 	}
+
+	botKeeper := misc.Keeper{
+		Guild:   cfg.Guild,
+		Channel: cfg.Channel,
+		Offset:  cfg.Delay,
+		Session: dg,
+	}
+
+	delay := time.Duration(botKeeper.Offset) * time.Minute
+
+	time.AfterFunc(delay, botKeeper.AwakeBOT)
 
 	// Wait here until CTRL-C or other term signal is received.
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
@@ -47,22 +75,18 @@ func main() {
 	dg.Close()
 }
 
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the authenticated bot has access to.
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func registerEvents(dg *discordgo.Session) {
+	dg.AddHandler(events.NewReadyHandler().Handler)
+}
 
-	// Ignore all messages created by the bot itself
-	// This isn't required in this specific example but it's a good practice.
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
+func registerCommands(dg *discordgo.Session, cfg *misc.Config) {
+	cmdHandler := commands.NewCommandHandler(cfg.Prefix)
 
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
-	}
+	cmdHandler.RegisterCommand(&commands.CmdShow{})
+	cmdHandler.RegisterCommand(&commands.CmdAdd{})
+	cmdHandler.RegisterCommand(&commands.CmdUpdate{})
+	cmdHandler.RegisterCommand(&commands.CmdList{})
+	cmdHandler.RegisterCommand(&commands.CmdHelp{})
+	cmdHandler.RegisterMiddleware(&commands.MwPermissions{})
+	dg.AddHandler(cmdHandler.HandleMessage)
 }

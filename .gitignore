@@ -4,3 +4,6 @@ obj/
 Test/
 _config.yml
 token.json
+config.json
+credentials.json
+*.exe

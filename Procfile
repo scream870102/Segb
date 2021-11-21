@@ -1,1 +1,1 @@
-web: bin/Sakamichi-Emoji-Go-Bot
+web: bin/segb
