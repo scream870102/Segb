@@ -97,11 +97,16 @@ func (s *SpreadSheet) TryAdd(value RawValue, guild string) bool {
 func (s *SpreadSheet) Init() {
 	var token Token
 	if tokenString := os.Getenv("TOKEN"); tokenString != "" {
-		json.Unmarshal([]byte(tokenString), &token)
-
+		fmt.Println("Init spreadsheet token from env")
+		err := json.Unmarshal([]byte(tokenString), &token)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		fmt.Println(token.Email)
 	} else if jsonFile, err := os.Open(s.tokenFileName); err == nil {
 		tokenString, _ := ioutil.ReadAll(jsonFile)
 		json.Unmarshal(tokenString, &token)
+		fmt.Println("Init spreadsheet token from json file")
 	}
 
 	// Create a JWT configurations object for the Google service account
@@ -124,25 +129,6 @@ func (s *SpreadSheet) Init() {
 	s.srv = srv
 
 	s.UpdateAllValueFromRemote()
-
-	// // Define the Sheet Name and fields to select
-	// readRange := "Class Data!A2:E"
-
-	// // Pull the data from the sheet
-	// resp, err := srv.Spreadsheets.Values.Get(s.spreadsheetId, readRange).Do()
-	// if err != nil {
-	// 	log.Fatalf("Unable to retrieve data from sheet: %v", err)
-	// }
-
-	// // Display pulled data
-	// if len(resp.Values) == 0 {
-	// 	fmt.Println("No data found.")
-	// } else {
-	// 	fmt.Println("Name, Major:")
-	// 	for _, row := range resp.Values {
-	// 		fmt.Printf("%s, %s\n", row[0], row[1])
-	// 	}
-	// }
 }
 
 func (s *SpreadSheet) UpdateAllValueFromRemote() {
