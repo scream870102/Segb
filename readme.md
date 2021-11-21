@@ -1,6 +1,6 @@
-# Sakamichi Emoji BOT
+# Segb
 
-This is a discord bot based on [Discord.Net](https://github.com/discord-net/Discord.Net).
+This is a discord bot based on [discordgo](https://github.com/bwmarrin/discordgo).
 
 ---
 
@@ -20,15 +20,33 @@ This is a discord bot based on [Discord.Net](https://github.com/discord-net/Disc
   - With its token
   - Have at least view+send message permissions to your discord server/channel
 - C# package
-  - [Discord.Net](https://github.com/discord-net/Discord.Net)
-  - NetEscapades.Configuration.Yaml
+  - [discordgo](https://github.com/bwmarrin/discordgo)
+  - [uuid](https://github.com/github.com/google/uuid)
   - Google.Apis.Sheets.v4
-- A yml file name with `_config.yml` in root with following content
 
-``` yml
-prefix: '~'
-tokens:
-  discord: "[token here]"
+- A config file name with `config.json` in root with following content
+
+``` json
+{
+ "token": "discord-token",
+ "prefix": "prefix",
+ "delay": 15,
+ "channel": "channel id",
+ "guild": "guild id"
+}
+```
+
+- A token file name with `token.json` in root with following content
+
+``` json
+{
+ "Email": "mail",
+ "PrivateKey": "key",
+ "TokenURL": "url",
+ "Scopes": [
+  "scope"
+ ]
+}
 ```
 
 ## Usage

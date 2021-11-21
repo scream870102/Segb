@@ -114,7 +114,6 @@ func (l *listArg) parse(args []string) (bool, bool) {
 	isAuthorFind := false
 	isTagFind := false
 	for _, v := range args {
-		//Try find author
 		if strings.Contains(v, "Author") || strings.Contains(v, "author") {
 			reg, _ := regexp.Compile("(\\w+)=(.*)")
 			res := reg.FindStringSubmatch(v)

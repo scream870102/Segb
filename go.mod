@@ -6,7 +6,6 @@ go 1.17
 require (
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/google/uuid v1.1.2
-	github.com/scream870102/argpas v0.4.0
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	google.golang.org/api v0.60.0
 )
