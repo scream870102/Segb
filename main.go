@@ -56,6 +56,8 @@ func main() {
 		return
 	}
 
+	dg.UpdateGameStatus(0, "モニモニダンスを踊ろ")
+	
 	botKeeper := misc.Keeper{
 		Guild:   cfg.Guild,
 		Channel: cfg.Channel,
